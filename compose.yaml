@@ -1,0 +1,53 @@
+version: "3.1"
+services:
+  db:
+    image: mysql 
+    container_name: db  #This will function as your database server name.
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root # Root is defalut user that existes for DB access .This will be the password.
+      MYSQL_DATABASE: test_db # This is your databbese name. NOT TO BE CONFUSED WITH SERVER NAME.
+    ports:
+      - "3308:3306"
+  phpmyadmin:
+    image: arm64v8/phpmyadmin:latest
+    restart: always
+    environment: # These environment values are defined above i the DB configuration 
+      PMA_HOST: db #Container name of your mySql
+      PMA_USER: root #Default my sql DB user
+      PMA_PASSWORD: root #MYSQL_ROOT_PASSWORD above
+    ports:
+      - "8080:80"
+  php-apache-environment:
+    container_name: php-apache
+    environment:
+      - max_upload=100M
+    build: 
+      context: ./php
+      dockerfile: dockerfile
+    volumes:
+      - ./php/src:/var/www/html/  #Path to folder in windows : path : Path to folder  in Linux
+    ports:
+      - 8000:80
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: root
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress:/var/www/html
+volumes:
+  db:
+  wordpress:
+
+
+      # Some Terminal linesrt docker 
+      # docker compose up  //start docker 
+      # docker compose down //stop docker
+      # docker compose up -d //detached , keep access to terminal 
+      # docker compose down -v // kill and delete container  

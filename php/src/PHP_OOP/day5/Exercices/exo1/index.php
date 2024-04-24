@@ -1,0 +1,1 @@
+<?php include("/var/www/html/index.php"); ?>
